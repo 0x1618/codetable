@@ -1,12 +1,12 @@
 from collections.abc import Mapping
 from dataclasses import asdict, dataclass
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass(frozen=True)
 class Code(Mapping):
     code: str
-    msg: Optional[str] = None
+    msg: str
 
     def __getitem__(self, key: str):
         return asdict(self)[key]
