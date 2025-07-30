@@ -1,5 +1,4 @@
-from codetable import Code, Codes, msg
-from codetable.codes_storage import CodesStorage
+from codetable import Code, Codes, CodesStorage, msg
 
 codes_storage = CodesStorage()
 
