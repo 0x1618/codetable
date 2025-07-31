@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name='codetable',
-    version='1.0.5',
+    version='1.0.6',
     description=
     "Codetable is a lightweight package for seamlessly setting up codes, such as those used in API responses.",
     long_description=long_description,
