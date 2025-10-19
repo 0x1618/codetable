@@ -14,16 +14,24 @@ MsgSource = str | MsgI18n
 
 class Code(Mapping):
     def __init__(
-        self, code: str, msg_source: MsgSource, codes: Type[Codes]
+        self,
+        code: str,
+        msg_source: MsgSource,
+        codes: Optional[Type[Codes]] = None
     ) -> None:
         self.code: str = code
         self.msg_source: MsgSource = msg_source
 
-        self._codes: Type[Codes] = codes
+        self._codes: Optional[Type[Codes]] = codes
 
     @property
     def msg(self) -> str:
         if isinstance(self.msg_source, dict):
+            if self._codes is None:
+                raise ValueError(
+                    "You use multiple languages, but you didn’t pass a codes argument to the __init__ function."
+                )
+
             fallback_lang: Optional[str] = self._codes.FALLBACK_LANGUAGE
 
             current_lang: Optional[
