@@ -63,14 +63,18 @@ class Code(Mapping):
 
         return self.msg_source
 
+    @property
+    def dict(self) -> dict:
+        return {"code": self.code, "msg": self.msg}
+
     def __getitem__(self, key: str):
-        return self[key]
+        return self.dict[key]
 
     def __iter__(self):
-        return iter(self)
+        return iter(self.dict)
 
     def __len__(self):
-        return len(self)
+        return len(self.dict)
 
     def __repr__(self) -> str:
         return f"Code({self.code})"
