@@ -209,3 +209,7 @@ __marimo__/
 # Other
 
 .DS_Store
+
+# Custom
+
+local_demo.py

@@ -5,14 +5,21 @@ from typing import TYPE_CHECKING, Any, ClassVar, Optional
 from .code import Code
 
 if TYPE_CHECKING:
+    from contextvars import ContextVar
+
     from .codes_storage import CodesStorage
     from .types import CodeRegistry
 
-FORBIDDEN_VARIABLE_NAMES = ("NAMESPACE", "EXPORT_TO")
+FORBIDDEN_VARIABLE_NAMES = (
+    "NAMESPACE", "CURRENT_LANGUAGE", "FALLBACK_LANGUAGE", "EXPORT_TO"
+)
 
 
 class Codes:
     NAMESPACE: ClassVar[str]
+
+    CURRENT_LANGUAGE: ClassVar[Optional[ContextVar[str]]] = None
+    FALLBACK_LANGUAGE: ClassVar[Optional[str]] = None
 
     EXPORT_TO: ClassVar[Optional[CodesStorage]] = None
 
@@ -39,9 +46,9 @@ class Codes:
 
             if variable_value is None:
                 code_registry[variable_name] = code
-            elif isinstance(variable_value, str):
+            elif type(variable_value) in (str, dict):
                 code_registry[variable_name] = Code(
-                    code=code, msg=variable_value
+                    code=code, msg_source=variable_value, codes=cls
                 )
             else:
                 raise TypeError(
@@ -62,6 +69,12 @@ class Codes:
         if getattr(cls, "NAMESPACE", None) is None:
             raise ValueError('Class attribute "NAMESPACE" is required.')
 
+        if (getattr(cls, "CURRENT_LANGUAGE", None) is not None) and \
+           (getattr(cls, "FALLBACK_LANGUAGE", None) is None):
+            raise ValueError(
+                'Class attribute "FALLBACK_LANGUAGE" is required when "CURRENT_LANGUAGE" is defined.'
+            )
+
     @classmethod
     def check_code_registry_presence(cls) -> None:
         if getattr(cls, 'code_registry', None) is None:
@@ -79,7 +92,7 @@ class Codes:
             if isinstance(code, str):
                 exported_codes[code] = None
             elif isinstance(code, Code):
-                exported_codes[code.code] = code.msg
+                exported_codes[code.code] = code.msg_source
             else:
                 raise TypeError(
                     f"Unsupported value type for {code}: {type(code)}"
